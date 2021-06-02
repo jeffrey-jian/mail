@@ -8,7 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // By default, load the inbox
   load_mailbox('inbox');
+
+  // Message
+  const message = document.querySelector('#message');
 });
+
 
 function compose_email() {
 
@@ -50,9 +54,18 @@ function compose_email() {
       console.log('printing: result...');
       console.log(result);
       console.log(result.error);
+      
+      // Email sent successfully
       if (!result.error) {
+        message.innerHTML = `<div class="alert alert-success" role="alert">
+        ${result.message}
+        </div>`
         // Redirect to sent mailbox
         load_mailbox('sent');
+      } else {
+        message.innerHTML = `<div class="alert alert-danger" role="alert">
+        ${result.error}
+      </div>`
       };
     });
     return false;
@@ -77,14 +90,35 @@ function load_mailbox(mailbox) {
     console.log(emails);
     // TODO
     for (i = 0; i < emails.length; i++) {
+      const email_id = emails[i].id;
       const email = document.createElement('div');
       email.className = 'email';
       email.innerHTML = `
-      sender ${emails[i].sender}, subject ${emails[i].subject}, timestamp ${emails[i].timestamp}
+      <div class="card">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="card-body"><strong>${emails[i].sender}</strong></div>
+          </div>
+          <div class="col-md-6">
+            <div class="card-body">${emails[i].subject}</div>
+          </div>
+          <div class="col-md-3 text-right">
+            <div class="card-body"><small>${emails[i].timestamp}<small></div>
+          </div>
+        </div>
+      </div>
       `;
+      email.addEventListener('click', () => {
+        view_mail(email_id)
+      });
 
       document.querySelector('#emails-view').append(email);
     }
 
   });
+}
+
+function view_mail(email) {
+  console.log('clicked')
+  console.log(`${email}`)
 }
