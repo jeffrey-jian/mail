@@ -257,7 +257,7 @@ function view_mail(id) {
     document.querySelector('#email-subject').innerHTML = email.subject;
     document.querySelector('#email-timestamp').innerHTML = email.timestamp;
     document.querySelector('#email-body').innerHTML = email.body;
-    document.querySelector('#reply-button').addEventListener('click', () => reply_email(email.sender, email.subject));
+    document.querySelector('#reply-button').addEventListener('click', () => reply_email(id));
 
     // Change email to read
     fetch(`/emails/${id}`, {
@@ -271,22 +271,39 @@ function view_mail(id) {
   })
 }
 
-function reply_email(email_address, email_subject) {
+function reply_email(email_id) {
   
   console.log('reply clicked...');
-  console.log(email_address);
+  console.log(email_id);
+  // Fetch email with id
+  fetch(`/emails/${email_id}`)
+  .then(response => response.json())
+  .then(email => {
+    // Print email
+    console.log('Print email...');
+    console.log(email);
+    console.log('End...');
 
-  // Run compose mail function
-  compose_email();
-  
-  if (email_subject.substring(0,4) !== 'Re: ') {
-    email_subject = 'Re: ' + email_subject;
-  };
-  // Edit recipients input field
-  document.querySelector("#compose-recipients").value = email_address;
-  document.querySelector('#compose-subject').value = email_subject;
+    sender_address = email.sender;
+    email_subject = email.subject;
+    email_body = email.body;
+    email_timestamp = email.timestamp;
 
-  
+    // Run compose mail function
+    compose_email();
+    
+    // Edit subject line
+    if (email_subject.substring(0,4) !== 'Re: ') {
+      email_subject = 'Re: ' + email_subject;
+    };
+
+    // Edit email body
+    new_body = `\n\n----------------------------------------\nOn ${email_timestamp}, ${sender_address} wrote:\n\n${email_body}`
+    // Edit recipients input field
+    document.querySelector("#compose-recipients").value = sender_address;
+    document.querySelector('#compose-subject').value = email_subject;
+    document.querySelector('#compose-body').value = new_body;
+  });
 }
 
 function archive_mail(email_id, archived_status) {
