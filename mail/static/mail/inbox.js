@@ -97,36 +97,33 @@ function load_mailbox(mailbox) {
     for (i = 0; i < emails.length; i++) {
       const email_id = emails[i].id;
       
-      const main_row = document.createElement('div');
-      main_row.className = 'row';
-      main_row.id = 'main_row';
+      const entry_row = document.createElement('div');
+      entry_row.className = 'row entry_row';
       
       const email_list = document.createElement('div');
-      email_list.className = 'email_list col-sm-11 border';
+      email_list.className = 'email_list col-sm-12 border';
 
-      // email_list div 
-      email_list.innerHTML = `
-        <div class="row">
-          <div class="col-md-3">
-            <div class="card-body"><strong>${emails[i].sender}</strong></div>
-          </div>
-          <div class="col-md-6">
-            <div class="card-body">${emails[i].subject}</div>
-          </div>
-          <div class="col-md-3 text-right">
-            <div class="card-body"><small>${emails[i].timestamp}<small></div>
-          </div>
-        </div>
-      `;
+       // email_list div 
+       email_list.innerHTML = `
+       <div class="row">
+         <div class="col-md-3">
+           <div class="card-body"><strong>${emails[i].sender}</strong></div>
+         </div>
+         <div class="col-md-6">
+           <div class="card-body">${emails[i].subject}</div>
+         </div>
+         <div class="col-md-3 text-right">
+           <div class="card-body"><small>${emails[i].timestamp}<small></div>
+         </div>
+       </div>
+     `;
       
-      // icon_list div
       const icon_list = document.createElement('div');
       icon_list.className = 'icon_list col-sm-1';
-      icon_list.style.display ='none'; 
-
-      // icon_list_row div
-      const icon_list_row = document.createElement('div');
-      icon_list_row.className = 'row'
+      icon_list.style.display ='none';
+      
+      const icon_row = document.createElement('div');
+      icon_row.className= 'row icon_row';
       
       const archive_list = document.createElement('div');
       archive_list.className = 'archive_list col-sm-6';
@@ -136,8 +133,8 @@ function load_mailbox(mailbox) {
       if (emails[i].archived === false) {
         archive_list.innerHTML = `
           <div class="row">
-            <div class="card-body px-2">
-              <i onclick="archive_mail(${email_id}, ${emails[i].archived}})" class="material-icons-outlined" style="font-size: 26px; color: gray">archive</i>
+            <div class="card-body px-1">
+              <i onclick="archive_mail(${email_id}, ${emails[i].archived})" class="material-icons-outlined" style="font-size: 30px; color: gray">archive</i>
             </div>
           </div>
           
@@ -146,8 +143,8 @@ function load_mailbox(mailbox) {
       } else {
         archive_list.innerHTML = `
           <div class="row">
-            <div class="card-body px-2">
-              <i onclick="archive_mail(${email_id}, ${emails[i].archived})" class="material-icons-outlined" style="font-size: 26px; color: gray">unarchive</i>
+            <div class="card-body px-1">
+              <i onclick="archive_mail(${email_id}, ${emails[i].archived})" class="material-icons-outlined" style="font-size: 30px; color: gray">unarchive</i>
             </div>
           </div>
         `;
@@ -155,32 +152,29 @@ function load_mailbox(mailbox) {
       
       const read_list = document.createElement('div');
       read_list.className = 'read_list col-sm-6';
-      
+
       // read_list div 
-      // if not archived
+      // if not read
       if (emails[i].read === false) {
         read_list.innerHTML = `
           <div class="row">
-            <div class="card-body px-2">
-              <i onclick="archive_mail(${email_id}, ${emails[i].archived}})" class="material-icons-outlined" style="font-size: 26px; color: gray">mark_email_read</i>
+            <div class="card-body px-1">
+              <i onclick="read_mail(${email_id}, ${emails[i].read})" class="material-icons-outlined" style="font-size: 30px; color: gray">mark_email_read</i>
             </div>
           </div>
           
         `;
-      // if archived
+      // if read
       } else {
         read_list.innerHTML = `
           <div class="row">
-            <div class="card-body px-2">
-              <i onclick="archive_mail(${email_id}, ${emails[i].archived})" class="material-icons-outlined" style="font-size: 26px; color: gray">mark_email_unread</i>
+            <div class="card-body px-1">
+              <i onclick="read_mail(${email_id}, ${emails[i].read})" class="material-icons-outlined" style="font-size: 30px; color: gray">mark_email_unread</i>
             </div>
           </div>
         `;
       };
 
-
-      document.querySelector('#emails-view').append(main_row)
-    
       // When mouseover email card
       email_list.addEventListener('mouseover', () => {
         email_list.className = 'email_list col-sm-11 border border-primary';
@@ -189,17 +183,19 @@ function load_mailbox(mailbox) {
 
       // When mouseout email card
       email_list.addEventListener('mouseout', () => {
-        email_list.className = 'email_list col-sm-11 border';
+        email_list.className = 'email_list col-sm-12 border';
         icon_list.style.display = 'none';
       });
 
       // When mouseover icon_list
       icon_list.addEventListener('mouseover', () => {
+        email_list.className = 'email_list col-sm-11 border border-primary';
         icon_list.style.display = 'block';
       });
 
       // When mouseout icon_list
       icon_list.addEventListener('mouseout', () => {
+        email_list.className = 'email_list col-sm-12 border';
         icon_list.style.display = 'none';
       });
 
@@ -228,13 +224,12 @@ function load_mailbox(mailbox) {
         email_list.style.backgroundColor = "white";
       }
 
-      icon_list_row.append(archive_list);
-      icon_list_row.append(read_list);
-      icon_list.append(icon_list_row);
-      document.querySelector('#main_row').append(email_list);
-      document.querySelector('#main_row').append(icon_list);
-      console.log(icon_list) 
-
+      icon_row.append(archive_list);
+      icon_row.append(read_list);
+      icon_list.append(icon_row);
+      entry_row.append(email_list);
+      entry_row.append(icon_list);
+      document.querySelector('#emails-view').append(entry_row);
     }
 
   });
@@ -310,6 +305,34 @@ function archive_mail(email_id, archived_status) {
       })
     })
     console.log('Unarchived!');
-  }
+  };
+  setTimeout(() => load_mailbox('inbox'), 100);
+  return false;
+}
 
+function read_mail(email_id, read_status) {
+  
+  console.log(`email with id ${email_id} current read status: ${read_status}`);
+  
+  if (read_status === false) {
+    // Read email
+    fetch(`/emails/${email_id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        read: true
+      })
+    })
+    console.log('Read!');
+  } else {
+    // Unread email
+    fetch(`/emails/${email_id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        read: false
+      })
+    })
+    console.log('Read!');
+  };
+  setTimeout(() => load_mailbox('inbox'), 100);
+  return false;
 }
