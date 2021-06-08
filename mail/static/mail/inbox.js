@@ -211,7 +211,7 @@ function load_mailbox(mailbox) {
 
       // When email card is clicked
       email_list.addEventListener('click', () => {
-        view_mail(email_id)
+        view_mail(email_id, mailbox)
         return false;
       });
     
@@ -235,7 +235,7 @@ function load_mailbox(mailbox) {
   });
 }
 
-function view_mail(id) {
+function view_mail(id, mailbox) {
 
   // Show the email view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
@@ -257,7 +257,41 @@ function view_mail(id) {
     document.querySelector('#email-subject').innerHTML = email.subject;
     document.querySelector('#email-timestamp').innerHTML = email.timestamp;
     document.querySelector('#email-body').innerHTML = email.body;
-    document.querySelector('#reply-button').addEventListener('click', () => reply_email(id));
+
+    // Archive and Reply div
+    const archive_reply_div = document.createElement('div');
+    archive_reply_div.className = 'archive_reply_div';
+    
+    const reply_button = document.createElement('button');
+    reply_button.className = 'btn btn-light';
+    reply_button.type = 'button';
+    reply_button.addEventListener('click', () => reply_email(id));
+    
+    const archive_button = document.createElement('button');
+    archive_button.type = 'button';
+    if (mailbox !== 'sent') {
+      console.log('mailbox not under SENT...');
+      if (email.archived === false) {
+        console.log('email NOT ARCHIVED...');
+        archive_button.className = 'btn btn-light';
+        archive_button.innerHTML = 'Archive';
+      } else if (email.archived === true) {
+        console.log('email ARCHIVED...');
+        archive_button.className = 'btn btn-dark';
+        archive_button.innerHTML = 'Unarchive';
+      };
+      archive_button.addEventListener('click', () => archive_mail(id, email.archived));
+
+
+      const test = document.createElement('p');
+      test.innerHTML = 'hello testing';
+
+      archive_reply_div.appendChild(reply_button);
+      archive_reply_div.appendChild(archive_button);
+      archive_reply_div.appendChild(test);
+      document.querySelector('#reply_archive_button').appendChild = archive_reply_div;
+    };
+    
 
     // Change email to read
     fetch(`/emails/${id}`, {
