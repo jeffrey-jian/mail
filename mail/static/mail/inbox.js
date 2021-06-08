@@ -258,40 +258,44 @@ function view_mail(id, mailbox) {
     document.querySelector('#email-timestamp').innerHTML = email.timestamp;
     document.querySelector('#email-body').innerHTML = email.body;
 
-    // Archive and Reply div
-    const archive_reply_div = document.createElement('div');
-    archive_reply_div.className = 'archive_reply_div';
+    // START TESTING
+
+    const outer_buttons = document.querySelector('#outer_buttons')
+    outer_buttons.innerHTML = '';
     
-    const reply_button = document.createElement('button');
-    reply_button.className = 'btn btn-light';
-    reply_button.type = 'button';
-    reply_button.addEventListener('click', () => reply_email(id));
-    
+    const inner_buttons = document.createElement('div');
+    inner_buttons.className = 'inner_buttons';
+
     const archive_button = document.createElement('button');
     archive_button.type = 'button';
+
     if (mailbox !== 'sent') {
-      console.log('mailbox not under SENT...');
       if (email.archived === false) {
-        console.log('email NOT ARCHIVED...');
-        archive_button.className = 'btn btn-light';
+        archive_button.className = 'archive_button btn btn-light';
         archive_button.innerHTML = 'Archive';
-      } else if (email.archived === true) {
-        console.log('email ARCHIVED...');
-        archive_button.className = 'btn btn-dark';
+      } else {
+        archive_button.className = 'archive_button btn btn-dark';
         archive_button.innerHTML = 'Unarchive';
       };
-      archive_button.addEventListener('click', () => archive_mail(id, email.archived));
-
-
-      const test = document.createElement('p');
-      test.innerHTML = 'hello testing';
-
-      archive_reply_div.appendChild(reply_button);
-      archive_reply_div.appendChild(archive_button);
-      archive_reply_div.appendChild(test);
-      document.querySelector('#reply_archive_button').appendChild = archive_reply_div;
     };
+    archive_button.addEventListener('click', () => {
+      archive_mail(id, email.archived);
+    });
+
+    const reply_button = document.createElement('button');
+    reply_button.type = 'button';
+    reply_button.className = 'reply_button btn btn-light';
+    reply_button.innerHTML = 'Reply';
+    reply_button.addEventListener('click', () => {
+      reply_email(id);
+    });
     
+    inner_buttons.append(reply_button);
+    inner_buttons.append(archive_button);
+    outer_buttons.append(inner_buttons);
+
+
+    // END TESTING
 
     // Change email to read
     fetch(`/emails/${id}`, {
@@ -302,7 +306,8 @@ function view_mail(id, mailbox) {
     });
 
     return false;
-  })
+
+  });
 }
 
 function reply_email(email_id) {
