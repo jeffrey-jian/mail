@@ -266,22 +266,6 @@ function view_mail(id, mailbox) {
     const inner_buttons = document.createElement('div');
     inner_buttons.className = 'inner_buttons';
 
-    const archive_button = document.createElement('button');
-    archive_button.type = 'button';
-
-    if (mailbox !== 'sent') {
-      if (email.archived === false) {
-        archive_button.className = 'archive_button btn btn-light';
-        archive_button.innerHTML = 'Archive';
-      } else {
-        archive_button.className = 'archive_button btn btn-dark';
-        archive_button.innerHTML = 'Unarchive';
-      };
-    };
-    archive_button.addEventListener('click', () => {
-      archive_mail(id, email.archived);
-    });
-
     const reply_button = document.createElement('button');
     reply_button.type = 'button';
     reply_button.className = 'reply_button btn btn-light';
@@ -289,9 +273,29 @@ function view_mail(id, mailbox) {
     reply_button.addEventListener('click', () => {
       reply_email(id);
     });
-    
+
     inner_buttons.append(reply_button);
-    inner_buttons.append(archive_button);
+
+    if (mailbox !== 'sent') {
+
+      const archive_button = document.createElement('button');
+      archive_button.type = 'button';
+      archive_button.addEventListener('click', () => {
+        archive_mail(id, email.archived);
+      });
+
+      if (email.archived === false) {
+        archive_button.className = 'archive_button btn btn-light';
+        archive_button.innerHTML = 'Archive';
+      } else {
+        archive_button.className = 'archive_button btn btn-dark';
+        archive_button.innerHTML = 'Unarchive';
+      };
+      
+      inner_buttons.append(archive_button);
+      
+    };
+
     outer_buttons.append(inner_buttons);
 
 
