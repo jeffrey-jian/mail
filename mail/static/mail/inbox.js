@@ -175,39 +175,54 @@ function load_mailbox(mailbox) {
         `;
       };
 
-      // When mouseover email card
-      email_list.addEventListener('mouseover', () => {
-        email_list.className = 'email_list col-sm-11 border border-primary';
-        icon_list.style.display = 'block';
-      });
+      if (mailbox !== 'sent') {
+        // When mouseover email card
+        email_list.addEventListener('mouseover', () => {
+          email_list.className = 'email_list col-sm-11 border border-primary';
+          icon_list.style.display = 'block';
+        });
 
-      // When mouseout email card
-      email_list.addEventListener('mouseout', () => {
-        email_list.className = 'email_list col-sm-12 border';
-        icon_list.style.display = 'none';
-      });
+        // When mouseout email card
+        email_list.addEventListener('mouseout', () => {
+          email_list.className = 'email_list col-sm-12 border';
+          icon_list.style.display = 'none';
+        });
 
-      // When mouseover icon_list
-      icon_list.addEventListener('mouseover', () => {
-        email_list.className = 'email_list col-sm-11 border border-primary';
-        icon_list.style.display = 'block';
-      });
+        // When mouseover icon_list
+        icon_list.addEventListener('mouseover', () => {
+          email_list.className = 'email_list col-sm-11 border border-primary';
+          icon_list.style.display = 'block';
+        });
 
-      // When mouseout icon_list
-      icon_list.addEventListener('mouseout', () => {
-        email_list.className = 'email_list col-sm-12 border';
-        icon_list.style.display = 'none';
-      });
+        // When mouseout icon_list
+        icon_list.addEventListener('mouseout', () => {
+          email_list.className = 'email_list col-sm-12 border';
+          icon_list.style.display = 'none';
+        });
 
-      document.querySelectorAll('.material-icons-outlined').forEach(function(icon) {
-        icon.onmouseover = () => {
-          icon.style.color = "#0275d8";
-        }
-        icon.onmouseout = () => {
-          icon.style.color = "gray";
-        }
-      });
+        document.querySelectorAll('.material-icons-outlined').forEach(function(icon) {
+          icon.onmouseover = () => {
+            icon.style.color = "#0275d8";
+          }
+          icon.onmouseout = () => {
+            icon.style.color = "gray";
+          }
+        });
+      } else {
+        // When mouseover email card
+        email_list.addEventListener('mouseover', () => {
+          email_list.className = 'email_list col-sm-12 border border-primary';
+          icon_list.style.display = 'none';
+        });
 
+        // When mouseout email card
+        email_list.addEventListener('mouseout', () => {
+          email_list.className = 'email_list col-sm-12 border';
+          icon_list.style.display = 'none';
+        });
+
+      };
+      
 
       // When email card is clicked
       email_list.addEventListener('click', () => {
@@ -256,9 +271,12 @@ function view_mail(id, mailbox) {
     document.querySelector('#email-to').innerHTML = email.recipients;
     document.querySelector('#email-subject').innerHTML = email.subject;
     document.querySelector('#email-timestamp').innerHTML = email.timestamp;
-    document.querySelector('#email-body').innerHTML = email.body;
+    document.querySelector('#email-body').innerHTML = `
+    <p style="white-space: pre-wrap;">${email.body}</p>
+    `;
+    console.log(email.body);
 
-    // START TESTING
+    // Inserting reply and archive buttons
 
     const outer_buttons = document.querySelector('#outer_buttons')
     outer_buttons.innerHTML = '';
@@ -268,7 +286,7 @@ function view_mail(id, mailbox) {
 
     const reply_button = document.createElement('button');
     reply_button.type = 'button';
-    reply_button.className = 'reply_button btn btn-light';
+    reply_button.className = 'reply_button btn btn-outline-primary m-1';
     reply_button.innerHTML = 'Reply';
     reply_button.addEventListener('click', () => {
       reply_email(id);
@@ -285,21 +303,19 @@ function view_mail(id, mailbox) {
       });
 
       if (email.archived === false) {
-        archive_button.className = 'archive_button btn btn-light';
+        archive_button.className = 'archive_button btn btn-outline-dark m-1';
         archive_button.innerHTML = 'Archive';
       } else {
-        archive_button.className = 'archive_button btn btn-dark';
+        archive_button.className = 'archive_button btn btn-dark m-1';
         archive_button.innerHTML = 'Unarchive';
       };
       
       inner_buttons.append(archive_button);
-      
+
     };
 
     outer_buttons.append(inner_buttons);
 
-
-    // END TESTING
 
     // Change email to read
     fetch(`/emails/${id}`, {
@@ -341,7 +357,7 @@ function reply_email(email_id) {
     };
 
     // Edit email body
-    new_body = `\n\n----------------------------------------\nOn ${email_timestamp}, ${sender_address} wrote:\n\n${email_body}`
+    new_body = `\n\n----------------------------------------\n"On ${email_timestamp}, ${sender_address} wrote:"\n\n${email_body}`
     // Edit recipients input field
     document.querySelector("#compose-recipients").value = sender_address;
     document.querySelector('#compose-subject').value = email_subject;
